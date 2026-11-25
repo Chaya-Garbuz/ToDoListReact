@@ -1,26 +1,32 @@
 import axios from 'axios';
 
-const apiUrl = "https://localhost:7271"
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    console.log('API error:', error.message);
+    return Promise.reject(error);
+  }
+);
 
 export default {
   getTasks: async () => {
-    const result = await axios.get(`${apiUrl}/items`)    
+    const result = await axios.get('/items')    
     return result.data;
   },
 
   addTask: async(name)=>{
-    console.log('addTask', name)
-    //TODO
-    return {};
+    const result = await axios.post('/items', { name: name, isComplete: false })
+    return result.data;
   },
 
-  setCompleted: async(id, isComplete)=>{
-    console.log('setCompleted', {id, isComplete})
-    //TODO
-    return {};
+  setCompleted: async(id, isComplete, name)=>{
+    const result = await axios.put(`/items/${id}`, { name: name, isComplete: isComplete })
+    return result.data;
   },
 
-  deleteTask:async()=>{
-    console.log('deleteTask')
+  deleteTask:async(id)=>{
+    await axios.delete(`/items/${id}`)
   }
 };
